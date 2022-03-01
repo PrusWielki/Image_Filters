@@ -5,23 +5,31 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Image_Filters"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid ShowGridLines="True">
+        Title="ImageFilters" Height="900" Width="1600">
+    <Grid>
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="4*"/>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="90"/>
         </Grid.ColumnDefinitions>
-        <Grid Grid.Column="1">
+        <Grid Grid.Column="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
-                <RowDefinition Height="8*"/>
+                <RowDefinition Height="10*"/>
             </Grid.RowDefinitions>
-            <Button Grid.Row="0" Content="Open a file" HorizontalAlignment="Center" VerticalAlignment="Center" Click="Button_Click" />
-            
+            <Button Grid.Row="0" Content="Open an image" HorizontalAlignment="Center" VerticalAlignment="Center" Click="Button_Click" />
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <ListView Grid.Row="0" x:Name="filterListView"/>
+            </Grid>
 
         </Grid>
-        <Image Grid.Column="0" Name="img" Stretch="Fill" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+        <Image Grid.Column="0" Name="imgorig" Stretch="Fill" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+        <Image Grid.Column="1" Name="imgmod" Stretch="Fill" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
     </Grid>
 
 </Window>

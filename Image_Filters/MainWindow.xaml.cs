@@ -23,16 +23,28 @@ namespace Image_Filters
         public MainWindow()
         {
             InitializeComponent();
+
+            var users = new List<String>();
+            for (int i = 0; i < 10; ++i)
+            {
+                users.Add(new String("asd"));
+            }
+
+            filterListView.ItemsSource = users;
+
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             Microsoft.Win32.OpenFileDialog openFileDialog = new Microsoft.Win32.OpenFileDialog();
             openFileDialog.DefaultExt = ".png";
-            openFileDialog.Filter = "JPEG Files (*.jpeg)|*.jpeg|PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg|GIF Files (*.gif)|*.gif";
+            openFileDialog.Filter = "JPEG Files (*.jpeg)|*.jpeg,*.png|PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg|GIF Files (*.gif)|*.gif";
 
             if (openFileDialog.ShowDialog() == true)
-                img.Source = new BitmapImage(new Uri(openFileDialog.FileName));
+            {
+                imgorig.Source = new BitmapImage(new Uri(openFileDialog.FileName));
+                imgmod.Source = new BitmapImage(new Uri(openFileDialog.FileName));
+            }
             //txtEditor.Text = File.ReadAllText(openFileDialog.FileName);
         }
     }
