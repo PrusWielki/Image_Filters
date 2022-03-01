@@ -24,5 +24,16 @@ namespace Image_Filters
         {
             InitializeComponent();
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            Microsoft.Win32.OpenFileDialog openFileDialog = new Microsoft.Win32.OpenFileDialog();
+            openFileDialog.DefaultExt = ".png";
+            openFileDialog.Filter = "JPEG Files (*.jpeg)|*.jpeg|PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg|GIF Files (*.gif)|*.gif";
+
+            if (openFileDialog.ShowDialog() == true)
+                img.Source = new BitmapImage(new Uri(openFileDialog.FileName));
+            //txtEditor.Text = File.ReadAllText(openFileDialog.FileName);
+        }
     }
 }

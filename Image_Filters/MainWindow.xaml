@@ -6,21 +6,22 @@
         xmlns:local="clr-namespace:Image_Filters"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
- <Grid ShowGridLines="True">
+    <Grid ShowGridLines="True">
 
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="4*"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="8*"/>
             </Grid.RowDefinitions>
-            <Button Grid.Row="0" Content="Open a file" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-
+            <Button Grid.Row="0" Content="Open a file" HorizontalAlignment="Center" VerticalAlignment="Center" Click="Button_Click" />
+            
 
         </Grid>
+        <Image Grid.Column="0" Name="img" Stretch="Fill" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
     </Grid>
 
 </Window>
