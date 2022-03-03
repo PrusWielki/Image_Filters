@@ -337,5 +337,11 @@ namespace Image_Filters
         {
         }
     }
+    class EdgeDetectionFilter : ConvolutionFilterBase
+    {
+        public EdgeDetectionFilter(string _name) : base(_name, 1.0, 0.0, new double[,] { { -5,  0,  0, }, {  0,  0,  0, }, {  0,  0,  5, }, })
+        {
+        }
+    }
 
 }

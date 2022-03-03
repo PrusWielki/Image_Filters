@@ -26,6 +26,7 @@ namespace Image_Filters
             filters.Add(new Blur3x3Filter("3x3 Blur"));
             filters.Add(new Gaussian3x3BlurFilter("Gaussian 3x3 Blur"));
             filters.Add(new Sharpen3x3Filter("3x3 Sharpen"));
+            filters.Add(new EdgeDetectionFilter("Edge detection"));
             //add initialize flters to filter list
             filterListView.ItemsSource = filters;
 
