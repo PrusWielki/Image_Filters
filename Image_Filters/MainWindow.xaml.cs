@@ -20,17 +20,22 @@ namespace Image_Filters
     /// </summary>
     public partial class MainWindow : Window
     {
+        private System.Drawing.Image? imageDrawing;
+        private List<ImageFilter> selectedFilters;
         public MainWindow()
         {
             InitializeComponent();
 
-            var users = new List<String>();
-            for (int i = 0; i < 10; ++i)
-            {
-                users.Add(new String("asd"));
-            }
+            //initialize a list of built-in filters 
+            var filters = new List<ImageFilter>();
 
-            filterListView.ItemsSource = users;
+            filters.Add(new Invert("Invert"));
+            filters.Add(new BrightnessCorrection("Invert"));
+
+
+            filterListView.ItemsSource = filters;
+
+            selectedFilters = new List<ImageFilter>();
 
         }
 
@@ -45,7 +50,60 @@ namespace Image_Filters
                 imgorig.Source = new BitmapImage(new Uri(openFileDialog.FileName));
                 imgmod.Source = new BitmapImage(new Uri(openFileDialog.FileName));
             }
+            ConvertToDrawing(imgorig);
             //txtEditor.Text = File.ReadAllText(openFileDialog.FileName);
+        }
+        private void ConvertToDrawing(System.Windows.Controls.Image img)
+        {
+            System.IO.MemoryStream ms = new System.IO.MemoryStream();
+            System.Windows.Media.Imaging.BmpBitmapEncoder bbe = new BmpBitmapEncoder();
+            bbe.Frames.Add(BitmapFrame.Create(new Uri(img.Source.ToString(), UriKind.RelativeOrAbsolute)));
+
+            bbe.Save(ms);
+            imageDrawing = System.Drawing.Image.FromStream(ms);
+
+
+        }
+
+        private BitmapImage ToWpfImage(System.Drawing.Image img)
+        {
+            System.IO.MemoryStream ms = new System.IO.MemoryStream();
+            img.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
+
+            BitmapImage ix = new BitmapImage();
+            ix.BeginInit();
+            ix.CacheOption = BitmapCacheOption.OnLoad;
+            ix.StreamSource = ms;
+            ix.EndInit();
+            return ix;
+        }
+        private void ListViewItem_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+
+            var item = sender as ListViewItem;
+
+            if (item != null && (item.Content as ImageFilter) != null)//&& item.IsSelected)
+            {
+                //MessageBox for Debugging
+               // MessageBoxResult result = MessageBox.Show("Hello MessageBox");
+
+                selectedFilters.Add(item.Content as ImageFilter);
+                selectedListView.ItemsSource = selectedFilters;
+                
+                imageDrawing = (item.Content as ImageFilter).applyFilter(imageDrawing);
+                imgmod.Source = ToWpfImage(imageDrawing);//new BitmapImage(new Uri("C:/Users/Patryk/Pictures/uyhj.png"));
+                //ConvertToDrawing(imgmod);
+
+            }
+        }
+        private void SelectedListViewItem_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+
+
+
+
+
+
         }
     }
 }
