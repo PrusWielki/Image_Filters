@@ -22,6 +22,7 @@ namespace Image_Filters
             filters.Add(new Invert("Invert"));
             filters.Add(new BrightnessCorrection("Brightness Correction"));
             filters.Add(new ContrastEnchancement("Contrast Enchancement"));
+            filters.Add(new GammaCorrection("Gamma Correction"));
             //add initialize flters to filter list
             filterListView.ItemsSource = filters;
 

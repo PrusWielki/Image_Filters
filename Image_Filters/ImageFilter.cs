@@ -148,4 +148,33 @@ namespace Image_Filters
             return newBitmap;
         }
     }
+    class GammaCorrection : ImageFilter
+    {
+        public GammaCorrection(string _name) : base(_name)
+        {
+        }
+
+        public override Image applyFilter(Image imgSource)
+        {
+            float gamma = 1.5F;
+            // Set the ImageAttributes object's gamma value.
+            ImageAttributes attributes = new ImageAttributes();
+            attributes.SetGamma(gamma);
+
+            // Draw the image onto the new bitmap
+            // while applying the new gamma value.
+            Point[] points = { new Point(0, 0), new Point(imgSource.Width, 0), new Point(0, imgSource.Height), };
+            Rectangle rect = new Rectangle(0, 0, imgSource.Width, imgSource.Height);
+
+            // Make the result bitmap.
+            Bitmap bm = new Bitmap(imgSource.Width, imgSource.Height);
+            using (Graphics gr = Graphics.FromImage(bm))
+            {
+                gr.DrawImage(imgSource, points, rect, GraphicsUnit.Pixel, attributes);
+            }
+
+            // Return the result.
+            return bm;
+        }
+    }
 }
