@@ -5,11 +5,12 @@ namespace Image_Filters
 {
     abstract class ImageFilter
     {
-        private string name;
+        protected string name;
 
-        public ImageFilter(string _name)  { name = _name; }
+        public ImageFilter(string _name) { name = _name; }
         public string getName() { return name; }
         abstract public Image applyFilter(Image imgSource);
+        public override string ToString() { return name; }
     }
     class Invert : ImageFilter
     {
