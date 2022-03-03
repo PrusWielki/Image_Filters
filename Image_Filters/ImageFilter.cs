@@ -177,7 +177,7 @@ namespace Image_Filters
             // Return the result.
             return bm;
 
-            
+
         }
     }
     class ConvolutionFilterBase : ImageFilter
@@ -185,7 +185,7 @@ namespace Image_Filters
         protected double factor;
         protected double bias;
         protected double[,] filterMatrix;
-       
+
         public ConvolutionFilterBase(string _name, double _factor, double _bias, double[,] _filterMatrix) : base(_name)
         {
             factor = _factor;
@@ -325,10 +325,17 @@ namespace Image_Filters
         {
         }
     }
-   class Gaussian3x3BlurFilter : ConvolutionFilterBase
+    class Gaussian3x3BlurFilter : ConvolutionFilterBase
     {
         public Gaussian3x3BlurFilter(string _name) : base(_name, 1.0 / 16.0, 0.0, new double[,] { { 1, 2, 1, }, { 2, 4, 2, }, { 1, 2, 1, }, })
         {
         }
     }
+    class Sharpen3x3Filter : ConvolutionFilterBase
+    {
+        public Sharpen3x3Filter(string _name) : base(_name, 1.0, 0.0, new double[,] { { 0, -1, 0, }, { -1, 5, -1, }, { 0, -1, 0, }, })
+        {
+        }
+    }
+
 }
