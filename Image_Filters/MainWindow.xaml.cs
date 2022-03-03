@@ -1,17 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Image_Filters
 {
@@ -21,38 +13,35 @@ namespace Image_Filters
     public partial class MainWindow : Window
     {
         private System.Drawing.Image? imageDrawing;
-        private List<ImageFilter> selectedFilters;
         public MainWindow()
         {
             InitializeComponent();
 
             //initialize a list of built-in filters 
             var filters = new List<ImageFilter>();
-
             filters.Add(new Invert("Invert"));
-            filters.Add(new BrightnessCorrection("Invert"));
-
-
+            filters.Add(new BrightnessCorrection("Brightness Correction"));
+            //add initialize flters to filter list
             filterListView.ItemsSource = filters;
 
-            selectedFilters = new List<ImageFilter>();
-
         }
-
+        //Opens choose file dialog
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             Microsoft.Win32.OpenFileDialog openFileDialog = new Microsoft.Win32.OpenFileDialog();
             openFileDialog.DefaultExt = ".png";
-            openFileDialog.Filter = "JPEG Files (*.jpeg)|*.jpeg,*.png|PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg|GIF Files (*.gif)|*.gif";
+            openFileDialog.Filter = "PNG Files (*.png)|*.png|EG Files (*.jpeg)|*.jpeg|JPG Files (*.jpg)|*.jpg|GIF Files (*.gif)|*.gif";
 
+            //assign chosen picture to both original and modified image
             if (openFileDialog.ShowDialog() == true)
             {
                 imgorig.Source = new BitmapImage(new Uri(openFileDialog.FileName));
                 imgmod.Source = new BitmapImage(new Uri(openFileDialog.FileName));
             }
+            //converts Controls.Image to Drawing.Image, necessary to be able to apply filters
             ConvertToDrawing(imgorig);
-            //txtEditor.Text = File.ReadAllText(openFileDialog.FileName);
         }
+        //converts Controls.Image to Drawing.Image, necessary to be able to apply filters, result is stored in property imageDrawing
         private void ConvertToDrawing(System.Windows.Controls.Image img)
         {
             System.IO.MemoryStream ms = new System.IO.MemoryStream();
@@ -61,10 +50,8 @@ namespace Image_Filters
 
             bbe.Save(ms);
             imageDrawing = System.Drawing.Image.FromStream(ms);
-
-
         }
-
+        //converts image back to a form that can be assgined to Control.Image
         private BitmapImage ToWpfImage(System.Drawing.Image img)
         {
             System.IO.MemoryStream ms = new System.IO.MemoryStream();
@@ -77,52 +64,55 @@ namespace Image_Filters
             ix.EndInit();
             return ix;
         }
+        //Event triggerred when a filter from filters list has been clicked, the filter is applied to the image
         private void ListViewItem_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
 
             var item = sender as ListViewItem;
 
-            if (item != null && (item.Content as ImageFilter) != null)//&& item.IsSelected)
+            if (item != null && (item.Content as ImageFilter) != null)
             {
                 //MessageBox for Debugging
-               // MessageBoxResult result = MessageBox.Show("Hello MessageBox");
+                // MessageBoxResult result = MessageBox.Show("Hello MessageBox");
 
-                selectedFilters.Add(item.Content as ImageFilter);
-                selectedListView.Items.Add(item.Content as ImageFilter);// = selectedFilters;
-                foreach (var filter in selectedListView.Items)
-                {
-                    imageDrawing = (filter as ImageFilter).applyFilter(imageDrawing);
-                }
-                    imgmod.Source = ToWpfImage(imageDrawing);
-                ConvertToDrawing(imgorig);
-                //new BitmapImage(new Uri("C:/Users/Patryk/Pictures/uyhj.png"));
-                //ConvertToDrawing(imgmod);
-
+                //add filter to selected filters and apply all selected filters to the original image resulting in a modified image
+                selectedListView.Items.Add(item.Content as ImageFilter);
+                ApplyFiliters();
             }
+            else
+                throw new NullReferenceException();
         }
+        //Event handling removal of selected filters
         private void SelectedListViewItem_PreviewMouseLeftButtonDown(object sender, SelectionChangedEventArgs e)
         {
-            if (e.AddedItems.Count > 0)
-            {
+            if (e.AddedItems.Count > 0)//remove selected filter from the list
                 selectedListView.Items.RemoveAt(selectedListView.Items.IndexOf(e.AddedItems[0]));
-
-
-            }
-            if (selectedListView.Items.Count == 0)
+            if (0 == selectedListView.Items.Count)//if the count of filters is equal to 0, then reset the image to the original
             {
                 imgmod.Source = imgorig.Source;
                 ConvertToDrawing(imgorig);
             }
-            else
+            else//if there are some filters selected, then reaaply them one by one to the original image, resulting in modified image
             {
-                foreach (var filter in selectedListView.Items)
-                {
-                    imageDrawing = (filter as ImageFilter).applyFilter(imageDrawing);
-
-                }
-                imgmod.Source = ToWpfImage(imageDrawing);
-                ConvertToDrawing(imgorig);
+                ApplyFiliters();
             }
+        }
+        private void ApplyFiliters()
+        {
+            foreach (var filter in selectedListView.Items)
+            {
+                if (null != imageDrawing)
+                    imageDrawing = ((ImageFilter)filter).applyFilter(imageDrawing);
+                else
+                    throw new NullReferenceException();
+
+            }
+            if (null != imageDrawing)
+                imgmod.Source = ToWpfImage(imageDrawing);
+            else
+                throw new NullReferenceException();
+            //convert original image back to Drawing.Image so that, the next time filters are applied, they are applied one by one to the original image
+            ConvertToDrawing(imgorig);
         }
     }
 }
