@@ -88,22 +88,41 @@ namespace Image_Filters
                // MessageBoxResult result = MessageBox.Show("Hello MessageBox");
 
                 selectedFilters.Add(item.Content as ImageFilter);
-                selectedListView.ItemsSource = selectedFilters;
-                
-                imageDrawing = (item.Content as ImageFilter).applyFilter(imageDrawing);
-                imgmod.Source = ToWpfImage(imageDrawing);//new BitmapImage(new Uri("C:/Users/Patryk/Pictures/uyhj.png"));
+                selectedListView.Items.Add(item.Content as ImageFilter);// = selectedFilters;
+                foreach (var filter in selectedListView.Items)
+                {
+                    imageDrawing = (filter as ImageFilter).applyFilter(imageDrawing);
+                }
+                    imgmod.Source = ToWpfImage(imageDrawing);
+                ConvertToDrawing(imgorig);
+                //new BitmapImage(new Uri("C:/Users/Patryk/Pictures/uyhj.png"));
                 //ConvertToDrawing(imgmod);
 
             }
         }
-        private void SelectedListViewItem_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void SelectedListViewItem_PreviewMouseLeftButtonDown(object sender, SelectionChangedEventArgs e)
         {
+            if (e.AddedItems.Count > 0)
+            {
+                selectedListView.Items.RemoveAt(selectedListView.Items.IndexOf(e.AddedItems[0]));
 
 
+            }
+            if (selectedListView.Items.Count == 0)
+            {
+                imgmod.Source = imgorig.Source;
+                ConvertToDrawing(imgorig);
+            }
+            else
+            {
+                foreach (var filter in selectedListView.Items)
+                {
+                    imageDrawing = (filter as ImageFilter).applyFilter(imageDrawing);
 
-
-
-
+                }
+                imgmod.Source = ToWpfImage(imageDrawing);
+                ConvertToDrawing(imgorig);
+            }
         }
     }
 }

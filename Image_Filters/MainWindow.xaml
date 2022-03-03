@@ -31,12 +31,7 @@
                         </Style>
                     </ListView.ItemContainerStyle>
                 </ListView>
-                <ListView Grid.Row="1" x:Name="selectedListView">
-                    <ListView.ItemContainerStyle>
-                        <Style TargetType="ListViewItem">
-                            <EventSetter Event="PreviewMouseLeftButtonDown" Handler="SelectedListViewItem_PreviewMouseLeftButtonDown" />
-                        </Style>
-                    </ListView.ItemContainerStyle>
+                <ListView Grid.Row="1" x:Name="selectedListView" SelectionChanged="SelectedListViewItem_PreviewMouseLeftButtonDown">
                 </ListView>
             </Grid>
 
