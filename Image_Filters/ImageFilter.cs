@@ -325,4 +325,10 @@ namespace Image_Filters
         {
         }
     }
+   class Gaussian3x3BlurFilter : ConvolutionFilterBase
+    {
+        public Gaussian3x3BlurFilter(string _name) : base(_name, 1.0 / 16.0, 0.0, new double[,] { { 1, 2, 1, }, { 2, 4, 2, }, { 1, 2, 1, }, })
+        {
+        }
+    }
 }
