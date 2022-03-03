@@ -86,4 +86,66 @@ namespace Image_Filters
             return bmpDest;
         }
     }
+    class ContrastEnchancement : ImageFilter
+    {
+        public ContrastEnchancement(string _name) : base(_name)
+        {
+        }
+
+        public override Image applyFilter(Image imgSource)
+        {
+            double value = 30;
+            value = (100.0f + value) / 100.0f;
+            value *= value;
+            Bitmap newBitmap = (Bitmap)imgSource.Clone();
+            BitmapData data = newBitmap.LockBits(
+                new Rectangle(0, 0, newBitmap.Width, newBitmap.Height),
+                ImageLockMode.ReadWrite,
+                newBitmap.PixelFormat);
+            int height = newBitmap.Height;
+            int width = newBitmap.Width;
+
+            unsafe
+            {
+                for (int y = 0; y < height; ++y)
+                {
+                    byte* row = (byte*)data.Scan0 + (y * data.Stride);
+                    int columnOffset = 0;
+                    for (int x = 0; x < width; ++x)
+                    {
+                        byte B = row[columnOffset];
+                        byte G = row[columnOffset + 1];
+                        byte R = row[columnOffset + 2];
+
+                        float Red = R / 255.0f;
+                        float Green = G / 255.0f;
+                        float Blue = B / 255.0f;
+                        Red = (float)((((Red - 0.5f) * value) + 0.5f) * 255.0f);
+                        Green = (float)((((Green - 0.5f) * value) + 0.5f) * 255.0f);
+                        Blue = (float)((((Blue - 0.5f) * value) + 0.5f) * 255.0f);
+
+                        int iR = (int)Red;
+                        iR = iR > 255 ? 255 : iR;
+                        iR = iR < 0 ? 0 : iR;
+                        int iG = (int)Green;
+                        iG = iG > 255 ? 255 : iG;
+                        iG = iG < 0 ? 0 : iG;
+                        int iB = (int)Blue;
+                        iB = iB > 255 ? 255 : iB;
+                        iB = iB < 0 ? 0 : iB;
+
+                        row[columnOffset] = (byte)iB;
+                        row[columnOffset + 1] = (byte)iG;
+                        row[columnOffset + 2] = (byte)iR;
+
+                        columnOffset += 4;
+                    }
+                }
+            }
+
+            newBitmap.UnlockBits(data);
+
+            return newBitmap;
+        }
+    }
 }
