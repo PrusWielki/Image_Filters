@@ -21,33 +21,19 @@ namespace Image_Filters
 
         public override Image applyFilter(Image imgSource)
         {
-            Bitmap bmpDest = new Bitmap(imgSource.Width,
+            Bitmap pic = new Bitmap(imgSource.Width,
          imgSource.Height);
 
-            ColorMatrix clrMatrix = new ColorMatrix(new float[][]
-               {
-            new float[] {-1, 0, 0, 0, 0},
-            new float[] {0, -1, 0, 0, 0},
-            new float[] {0, 0, -1, 0, 0},
-            new float[] {0, 0, 0, 1, 0},
-            new float[] {1, 1, 1, 0, 1}
-               });
+            
+for (int y = 0; (y <= (pic.Height - 1)); y++) {
+    for (int x = 0; (x <= (pic.Width - 1)); x++) {
+        Color inv = pic.GetPixel(x, y);
+        inv = Color.FromArgb(255, (255 - inv.R), (255 - inv.G), (255 - inv.B));
+        pic.SetPixel(x, y, inv);
+    }
+}
 
-            using (ImageAttributes attrImage = new ImageAttributes())
-            {
-
-                attrImage.SetColorMatrix(clrMatrix);
-
-                using (Graphics g = Graphics.FromImage(bmpDest))
-                {
-                    g.DrawImage(imgSource, new Rectangle(0, 0,
-                    imgSource.Width, imgSource.Height), 0, 0,
-                    imgSource.Width, imgSource.Height, GraphicsUnit.Pixel,
-                    attrImage);
-                }
-            }
-
-            return bmpDest;
+            return pic;
         }
     }
     class BrightnessCorrection : ImageFilter
