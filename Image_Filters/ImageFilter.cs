@@ -46,9 +46,10 @@ for (int y = 0; (y <= (pic.Height - 1)); y++) {
         {
 
            int amount=10;
-
-  // GDI+ still lies to us - the return format is BGR, NOT RGB.
-  BitmapData bmData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);
+            Bitmap bitmap = new Bitmap(imgSource.Width,
+        imgSource.Height);
+            // GDI+ still lies to us - the return format is BGR, NOT RGB.
+            BitmapData bmData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);
 
   int stride = bmData.Stride;
   System.IntPtr Scan0 = bmData.Scan0;
