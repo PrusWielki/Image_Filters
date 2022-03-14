@@ -2,6 +2,8 @@
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 
+#DEFINE BRIGHT 10
+
 namespace Image_Filters
 {
     abstract class ImageFilter
@@ -21,6 +23,7 @@ namespace Image_Filters
 
         public override Image applyFilter(Image imgSource)
         {
+            //convert Image to Bitmap, to perform operations on pixels
             Bitmap pic = (Bitmap)imgSource.Clone();
 
 
@@ -28,13 +31,15 @@ namespace Image_Filters
             {
                 for (int x = 0; (x <= (pic.Width - 1)); x++)
                 {
+                    //get color of a pixel located at point (x,y) in the picture
                     Color inv = pic.GetPixel(x, y);
-
+                    //invert the pixel's color
                     inv = Color.FromArgb(255, 255-inv.R,  255-inv.G,  255-inv.B);
+                    //assign new color to a pixel at point (x,y)
                     pic.SetPixel(x, y, inv);
                 }
             }
-
+            
             return pic;
         }
     }
@@ -46,37 +51,48 @@ namespace Image_Filters
 
         public override Image applyFilter(Image imgSource)
         {
+            //amount dictates by how much should the image be brightened, controlled by macro
+            int amount = BRIGHT;
 
-            int amount = 10;
             Bitmap bitmap = (Bitmap)imgSource.Clone();
-            // GDI+ still lies to us - the return format is BGR, NOT RGB.
+            
+            //lock the entire bitmap, the whole image, in system memory, so that the bitmap can be altered programatically
+            //also get data about the bitmap such as the address of the first pixel or length of a row of pixels
             BitmapData bmData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);
 
+            //get the width of a single row of pixels
             int stride = bmData.Stride;
+            //get address of the first pixel in the bitmap
             System.IntPtr Scan0 = bmData.Scan0;
 
+            //stores the new R,G or B value increased by "amount"
             int nVal = 0;
 
             unsafe
             {
                 byte* p = (byte*)(void*)Scan0;
 
+                //each of the below is multiplied by 3, cause each RGB channel is dealt with separately
                 int nOffset = stride - bitmap.Width * 3;
                 int nWidth = bitmap.Width * 3;
 
                 for (int y = 0; y < bitmap.Height; ++y)
                 {
+                    //go through the whole line at row y and increase each R,G,B value by "amount"
                     for (int x = 0; x < nWidth; ++x)
                     {
                         nVal = (int)(p[0] + amount);
 
+                        //in case new value doesnt fit into the 0-255 range
                         if (nVal < 0) nVal = 0;
                         if (nVal > 255) nVal = 255;
 
                         p[0] = (byte)nVal;
 
+                        //move the pointer to the next R,G,B value
                         ++p;
                     }
+                    //skip the bytes that dont correspond to pixel's RGB values and move to the next line
                     p += nOffset;
                 }
             }
