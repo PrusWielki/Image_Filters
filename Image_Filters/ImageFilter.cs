@@ -3,6 +3,8 @@ using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 
 #DEFINE BRIGHT 10
+#DEFINE CONTR 30
+#DEFINE GAMMA 1.5F
 
 namespace Image_Filters
 {
@@ -110,14 +112,20 @@ namespace Image_Filters
 
         public override Image applyFilter(Image imgSource)
         {
-            double value = 30;
+            //value dictates by how much should the contrast be changed, controlled by CONTR macro
+            double value = CONTR;
+
+            //value is scaled to a to 0-x format (for example 1.1 to brighten up the image or 0.9 to darken it), cause the R,G,B value will be multiplied by that value
             value = (100.0f + value) / 100.0f;
-            value *= value;
+            //value *= value;
+
+
             Bitmap newBitmap = (Bitmap)imgSource.Clone();
-            BitmapData data = newBitmap.LockBits(
-                new Rectangle(0, 0, newBitmap.Width, newBitmap.Height),
-                ImageLockMode.ReadWrite,
-                newBitmap.PixelFormat);
+
+            //lock the bitmap in the memory, so that we can get the address of the first pixel
+            BitmapData data = newBitmap.LockBits(new Rectangle(0, 0, newBitmap.Width, newBitmap.Height), ImageLockMode.ReadWrite, newBitmap.PixelFormat);
+           
+           
             int height = newBitmap.Height;
             int width = newBitmap.Width;
 
@@ -125,14 +133,21 @@ namespace Image_Filters
             {
                 for (int y = 0; y < height; ++y)
                 {
+                    //get the pointer to the y'th row, to the first R,G or B value
                     byte* row = (byte*)data.Scan0 + (y * data.Stride);
-                    int columnOffset = 0;
+
+
+                    int columnOffset = 0; //kind of an index going through all columns
+                    //go through the whole row
                     for (int x = 0; x < width; ++x)
                     {
+
+                        //read R,G,B values, the are stored in BGR format
                         byte B = row[columnOffset];
                         byte G = row[columnOffset + 1];
                         byte R = row[columnOffset + 2];
 
+                        //change pixel's RGB values to change it's brightness
                         float Red = R / 255.0f;
                         float Green = G / 255.0f;
                         float Blue = B / 255.0f;
@@ -140,6 +155,8 @@ namespace Image_Filters
                         Green = (float)((((Green - 0.5f) * value) + 0.5f) * 255.0f);
                         Blue = (float)((((Blue - 0.5f) * value) + 0.5f) * 255.0f);
 
+
+                        //normalize values to the 0-255 range
                         int iR = (int)Red;
                         iR = iR > 255 ? 255 : iR;
                         iR = iR < 0 ? 0 : iR;
@@ -150,10 +167,11 @@ namespace Image_Filters
                         iB = iB > 255 ? 255 : iB;
                         iB = iB < 0 ? 0 : iB;
 
+                        //assign new values
                         row[columnOffset] = (byte)iB;
                         row[columnOffset + 1] = (byte)iG;
                         row[columnOffset + 2] = (byte)iR;
-
+                        //move to the next set of RGB values
                         columnOffset += 4;
                     }
                 }
@@ -172,7 +190,7 @@ namespace Image_Filters
 
         public override Image applyFilter(Image imgSource)
         {
-            float gamma = 1.5F;
+            float gamma = GAMMA;
             // Set the ImageAttributes object's gamma value.
             ImageAttributes attributes = new ImageAttributes();
             attributes.SetGamma(gamma);
