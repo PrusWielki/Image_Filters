@@ -1,0 +1,17 @@
+﻿<Window x:Class="Image_Filters.NewFilterWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:dg2d="clr-namespace:DataGrid2DLibrary;assembly=DataGrid2DLibrary"
+        xmlns:local="clr-namespace:Image_Filters"
+        mc:Ignorable="d"
+        Title="NewFilterWindow" Height="450" Width="800">
+    <Grid>
+        
+
+        <dg2d:DataGrid2D Name="c_dataGrid2D" 
+                 UseModifiedDataGridStyle="True" 
+                 ItemsSource2D="{Binding String2DArray}"/>
+    </Grid>
+</Window>

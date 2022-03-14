@@ -53,7 +53,12 @@ namespace Image_Filters
         {
             System.IO.MemoryStream ms = new System.IO.MemoryStream();
             System.Windows.Media.Imaging.BmpBitmapEncoder bbe = new BmpBitmapEncoder();
-            bbe.Frames.Add(BitmapFrame.Create(new Uri(img.Source.ToString(), UriKind.RelativeOrAbsolute)));
+            if (null != img.Source)
+                bbe.Frames.Add(BitmapFrame.Create(new Uri(img.Source.ToString(), UriKind.RelativeOrAbsolute)));
+
+            else
+                return;
+            
 
             bbe.Save(ms);
             imageDrawing = System.Drawing.Image.FromStream(ms);
@@ -83,8 +88,11 @@ namespace Image_Filters
                 // MessageBoxResult result = MessageBox.Show("Hello MessageBox");
 
                 //add filter to selected filters and apply all selected filters to the original image resulting in a modified image
-                selectedListView.Items.Add(item.Content as ImageFilter);
-                ApplyFiliters();
+                if (null != imgorig.Source)
+                {
+                    selectedListView.Items.Add(item.Content as ImageFilter);
+                    ApplyFiliters();
+                }
             }
             else
                 throw new NullReferenceException();
@@ -111,7 +119,7 @@ namespace Image_Filters
                 if (null != imageDrawing)
                     imageDrawing = ((ImageFilter)filter).applyFilter(imageDrawing);
                 else
-                    throw new NullReferenceException();
+                    return;// throw new NullReferenceException();
 
             }
             if (null != imageDrawing)
@@ -120,6 +128,11 @@ namespace Image_Filters
                 throw new NullReferenceException();
             //convert original image back to Drawing.Image so that, the next time filters are applied, they are applied one by one to the original image
             ConvertToDrawing(imgorig);
+        }
+
+        private void NewFilter_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }
