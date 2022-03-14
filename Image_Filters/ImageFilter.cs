@@ -36,12 +36,12 @@ namespace Image_Filters
                     //get color of a pixel located at point (x,y) in the picture
                     Color inv = pic.GetPixel(x, y);
                     //invert the pixel's color
-                    inv = Color.FromArgb(255, 255-inv.R,  255-inv.G,  255-inv.B);
+                    inv = Color.FromArgb(255, 255 - inv.R, 255 - inv.G, 255 - inv.B);
                     //assign new color to a pixel at point (x,y)
                     pic.SetPixel(x, y, inv);
                 }
             }
-            
+
             return pic;
         }
     }
@@ -57,7 +57,7 @@ namespace Image_Filters
             int amount = BRIGHT;
 
             Bitmap bitmap = (Bitmap)imgSource.Clone();
-            
+
             //lock the entire bitmap, the whole image, in system memory, so that the bitmap can be altered programatically
             //also get data about the bitmap such as the address of the first pixel or length of a row of pixels
             BitmapData bmData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);
@@ -124,8 +124,8 @@ namespace Image_Filters
 
             //lock the bitmap in the memory, so that we can get the address of the first pixel
             BitmapData data = newBitmap.LockBits(new Rectangle(0, 0, newBitmap.Width, newBitmap.Height), ImageLockMode.ReadWrite, newBitmap.PixelFormat);
-           
-           
+
+
             int height = newBitmap.Height;
             int width = newBitmap.Width;
 
@@ -190,25 +190,39 @@ namespace Image_Filters
 
         public override Image applyFilter(Image imgSource)
         {
-            float gamma = GAMMA;
-            // Set the ImageAttributes object's gamma value.
-            ImageAttributes attributes = new ImageAttributes();
-            attributes.SetGamma(gamma);
-
-            // Draw the image onto the new bitmap
-            // while applying the new gamma value.
-            Point[] points = { new Point(0, 0), new Point(imgSource.Width, 0), new Point(0, imgSource.Height), };
-            Rectangle rect = new Rectangle(0, 0, imgSource.Width, imgSource.Height);
-
-            // Make the result bitmap.
-            Bitmap bm = new Bitmap(imgSource.Width, imgSource.Height);
-            using (Graphics gr = Graphics.FromImage(bm))
+            int width = imgSource.Width;
+            int height = imgSource.Height;
+            BitmapData srcData = imgSource.LockBits(new Rectangle(0, 0, width, height),
+                ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+            //hold the amount of bytes needed to represent the image's pixels
+            int bytes = srcData.Stride * srcData.Height;
+            byte[] buffer = new byte[bytes];
+            byte[] result = new byte[bytes];
+            
+            Marshal.Copy(srcData.Scan0, buffer, 0, bytes);
+            imgSource.UnlockBits(srcData);
+            int current = 0;
+            int cChannels = 3;
+            for (int y = 0; y < height; y++)
             {
-                gr.DrawImage(imgSource, points, rect, GraphicsUnit.Pixel, attributes);
+                for (int x = 0; x < width; x++)
+                {
+                    current = y * srcData.Stride + x * 4;
+                    for (int i = 0; i < cChannels; i++)
+                    {
+                        double range = (double)buffer[current + i] / 255;
+                        double correction = c * Math.Pow(range, gamma);
+                        result[current + i] = (byte)(correction * 255);
+                    }
+                    result[current + 3] = 255;
+                }
             }
-
-            // Return the result.
-            return bm;
+            Bitmap resImg = new Bitmap(width, height);
+            BitmapData resData = resImg.LockBits(new Rectangle(0, 0, width, height),
+                ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
+            Marshal.Copy(result, 0, resData.Scan0, bytes);
+            resImg.UnlockBits(resData);
+            return resImg;
 
 
         }
