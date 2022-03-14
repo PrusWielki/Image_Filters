@@ -2,10 +2,6 @@
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 
-#DEFINE BRIGHT 10
-#DEFINE CONTR 30
-#DEFINE GAMMA 1.5F
-
 namespace Image_Filters
 {
     abstract class ImageFilter
@@ -53,8 +49,8 @@ namespace Image_Filters
 
         public override Image applyFilter(Image imgSource)
         {
-            //amount dictates by how much should the image be brightened, controlled by macro
-            int amount = BRIGHT;
+            //amount dictates by how much should the image be brightened
+            int amount = 10;
 
             Bitmap bitmap = (Bitmap)imgSource.Clone();
 
@@ -113,7 +109,7 @@ namespace Image_Filters
         public override Image applyFilter(Image imgSource)
         {
             //value dictates by how much should the contrast be changed, controlled by CONTR macro
-            double value = CONTR;
+            double value = 30;
 
             //value is scaled to a to 0-x format (for example 1.1 to brighten up the image or 0.9 to darken it), cause the R,G,B value will be multiplied by that value
             value = (100.0f + value) / 100.0f;
@@ -192,39 +188,48 @@ namespace Image_Filters
         {
             int width = imgSource.Width;
             int height = imgSource.Height;
-            BitmapData srcData = imgSource.LockBits(new Rectangle(0, 0, width, height),
-                ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+            Bitmap newBitmap = (Bitmap)imgSource.Clone();
+
+            //values needed for the S=C*R^y equation
+            double gamma = 1.5;
+            double c = 1;
+
+            BitmapData srcData = newBitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
             //hold the amount of bytes needed to represent the image's pixels
             int bytes = srcData.Stride * srcData.Height;
             byte[] buffer = new byte[bytes];
             byte[] result = new byte[bytes];
             
+            //copy image data to the buffer
             Marshal.Copy(srcData.Scan0, buffer, 0, bytes);
-            imgSource.UnlockBits(srcData);
+            newBitmap.UnlockBits(srcData);
+
+            //current stands for the current pixel the gamma correction is applied at
             int current = 0;
-            int cChannels = 3;
+
             for (int y = 0; y < height; y++)
             {
                 for (int x = 0; x < width; x++)
                 {
                     current = y * srcData.Stride + x * 4;
-                    for (int i = 0; i < cChannels; i++)
+                    //iterate over R,G,B
+                    for (int i = 0; i < 3; i++)
                     {
                         double range = (double)buffer[current + i] / 255;
-                        double correction = c * Math.Pow(range, gamma);
+                        double correction = c * System.Math.Pow(range, gamma);
                         result[current + i] = (byte)(correction * 255);
                     }
+                    //alpha channel
                     result[current + 3] = 255;
                 }
             }
+            //create a new bitmap with changed pixel rgb values
             Bitmap resImg = new Bitmap(width, height);
-            BitmapData resData = resImg.LockBits(new Rectangle(0, 0, width, height),
-                ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
+            BitmapData resData = resImg.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
             Marshal.Copy(result, 0, resData.Scan0, bytes);
             resImg.UnlockBits(resData);
+
             return resImg;
-
-
         }
     }
     class ConvolutionFilterBase : ImageFilter
