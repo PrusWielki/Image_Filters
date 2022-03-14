@@ -248,11 +248,9 @@ namespace Image_Filters
         public override Image applyFilter(Image imgSource)
         {
             Bitmap sourceBitmap = (Bitmap)imgSource.Clone();
-            BitmapData sourceData = sourceBitmap.LockBits(new Rectangle(0, 0,
-                                sourceBitmap.Width, sourceBitmap.Height),
-                                ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+            BitmapData sourceData = sourceBitmap.LockBits(new Rectangle(0, 0, sourceBitmap.Width, sourceBitmap.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
 
-
+            //initialize buffer with a size of a picture's height times it's stride (the width of a single row of pixels)
             byte[] pixelBuffer = new byte[sourceData.Stride * sourceData.Height];
             byte[] resultBuffer = new byte[sourceData.Stride * sourceData.Height];
 
@@ -267,87 +265,70 @@ namespace Image_Filters
             double green = 0.0;
             double red = 0.0;
 
-
+            //get convolution filter matrix height and width(built in filters are 3x3)
             int filterWidth = filterMatrix.GetLength(1);
             int filterHeight = filterMatrix.GetLength(0);
 
-
+            //offset needed for when we work on pictures around the edges
             int filterOffset = (filterWidth - 1) / 2;
             int calcOffset = 0;
 
 
             int byteOffset = 0;
 
-
-            for (int offsetY = filterOffset; offsetY <
-                 sourceBitmap.Height - filterOffset; offsetY++)
+            //start off not from the very beggining of an image but with an offset (in the case of 3x3 filters, instead of starting from point (0,0) - start from (1,1))
+            for (int offsetY = filterOffset; offsetY < sourceBitmap.Height - filterOffset; offsetY++)
             {
-                for (int offsetX = filterOffset; offsetX <
-                     sourceBitmap.Width - filterOffset; offsetX++)
+                for (int offsetX = filterOffset; offsetX < sourceBitmap.Width - filterOffset; offsetX++)
                 {
                     blue = 0;
                     green = 0;
                     red = 0;
 
-
-                    byteOffset = offsetY *
-                                    sourceData.Stride +
-                                    offsetX * 4;
+                    //get to the correct set of aRGB values in the correct row, kind of an index
+                    byteOffset = offsetY * sourceData.Stride + offsetX * 4;
 
 
-                    for (int filterY = -filterOffset;
-                         filterY <= filterOffset; filterY++)
+                    for (int filterY = -filterOffset; filterY <= filterOffset; filterY++)
                     {
-                        for (int filterX = -filterOffset;
-                             filterX <= filterOffset; filterX++)
+                        for (int filterX = -filterOffset; filterX <= filterOffset; filterX++)
                         {
 
+                            //get index of one the neighbourhood pixel
+                            calcOffset = byteOffset + (filterX * 4) + (filterY * sourceData.Stride);
 
-                            calcOffset = byteOffset +
-                                         (filterX * 4) +
-                                         (filterY * sourceData.Stride);
+                            //calculate new values for the pixel at byteoffset, multiple chosen neighbhour pixel by corresponding matrix value
 
+                            blue += (double)(pixelBuffer[calcOffset]) * filterMatrix[filterY + filterOffset, filterX + filterOffset];
 
-                            blue += (double)(pixelBuffer[calcOffset]) *
-                                     filterMatrix[filterY + filterOffset,
-                                     filterX + filterOffset];
+                            green += (double)(pixelBuffer[calcOffset + 1]) * filterMatrix[filterY + filterOffset, filterX + filterOffset];
 
-
-                            green += (double)(pixelBuffer[calcOffset + 1]) *
-                                      filterMatrix[filterY + filterOffset,
-                                      filterX + filterOffset];
-
-
-                            red += (double)(pixelBuffer[calcOffset + 2]) *
-                                    filterMatrix[filterY + filterOffset,
-                                    filterX + filterOffset];
+                            red += (double)(pixelBuffer[calcOffset + 2]) * filterMatrix[filterY + filterOffset,filterX + filterOffset];
                         }
                     }
 
-
+                    //apply factor and bias to the newly calculated values
                     blue = factor * blue + bias;
                     green = factor * green + bias;
                     red = factor * red + bias;
 
-
+                    //normilize newly caluclated values to the 0-255 range
                     if (blue > 255)
                     { blue = 255; }
                     else if (blue < 0)
                     { blue = 0; }
-
 
                     if (green > 255)
                     { green = 255; }
                     else if (green < 0)
                     { green = 0; }
 
-
                     if (red > 255)
                     { red = 255; }
                     else if (red < 0)
                     { red = 0; }
 
-
+                    //save resulting pixel
                     resultBuffer[byteOffset] = (byte)(blue);
                     resultBuffer[byteOffset + 1] = (byte)(green);
                     resultBuffer[byteOffset + 2] = (byte)(red);
@@ -355,7 +336,7 @@ namespace Image_Filters
                 }
             }
 
-
+            //save results to new bitmap
             Bitmap resultBitmap = new Bitmap(sourceBitmap.Width, sourceBitmap.Height);
 
 
@@ -373,7 +354,7 @@ namespace Image_Filters
     }
     class Blur3x3Filter : ConvolutionFilterBase
     {
-        public Blur3x3Filter(string _name) : base(_name, 1.0, 0.0, new double[,] { { 0.0, 0.2, 0.0, }, { 0.2, 0.2, 0.2, }, { 0.0, 0.2, 0.2, }, })
+        public Blur3x3Filter(string _name) : base(_name, 1.0/9.0, 0.0, new double[,] { { 1, 1, 1, }, { 1, 1, 1, }, { 1, 1, 1, }, })
         {
         }
     }
