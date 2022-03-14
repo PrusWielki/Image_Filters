@@ -21,17 +21,19 @@ namespace Image_Filters
 
         public override Image applyFilter(Image imgSource)
         {
-            Bitmap pic = new Bitmap(imgSource.Width,
-         imgSource.Height);
+            Bitmap pic = (Bitmap)imgSource.Clone();
 
-            
-for (int y = 0; (y <= (pic.Height - 1)); y++) {
-    for (int x = 0; (x <= (pic.Width - 1)); x++) {
-        Color inv = pic.GetPixel(x, y);
-        inv = Color.FromArgb(255, (255 - inv.R), (255 - inv.G), (255 - inv.B));
-        pic.SetPixel(x, y, inv);
-    }
-}
+
+            for (int y = 0; (y <= (pic.Height - 1)); y++)
+            {
+                for (int x = 0; (x <= (pic.Width - 1)); x++)
+                {
+                    Color inv = pic.GetPixel(x, y);
+
+                    inv = Color.FromArgb(255, 255-inv.R,  255-inv.G,  255-inv.B);
+                    pic.SetPixel(x, y, inv);
+                }
+            }
 
             return pic;
         }
@@ -45,44 +47,43 @@ for (int y = 0; (y <= (pic.Height - 1)); y++) {
         public override Image applyFilter(Image imgSource)
         {
 
-           int amount=10;
-            Bitmap bitmap = new Bitmap(imgSource.Width,
-        imgSource.Height);
+            int amount = 10;
+            Bitmap bitmap = (Bitmap)imgSource.Clone();
             // GDI+ still lies to us - the return format is BGR, NOT RGB.
             BitmapData bmData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);
 
-  int stride = bmData.Stride;
-  System.IntPtr Scan0 = bmData.Scan0;
+            int stride = bmData.Stride;
+            System.IntPtr Scan0 = bmData.Scan0;
 
-  int nVal = 0;
+            int nVal = 0;
 
-  unsafe
-  {
-    byte* p = (byte*)(void*)Scan0;
+            unsafe
+            {
+                byte* p = (byte*)(void*)Scan0;
 
-    int nOffset = stride - bitmap.Width * 3;
-    int nWidth = bitmap.Width * 3;
+                int nOffset = stride - bitmap.Width * 3;
+                int nWidth = bitmap.Width * 3;
 
-    for (int y = 0; y < bitmap.Height; ++y)
-    {
-      for (int x = 0; x < nWidth; ++x)
-      {
-        nVal = (int)(p[0] + amount);
+                for (int y = 0; y < bitmap.Height; ++y)
+                {
+                    for (int x = 0; x < nWidth; ++x)
+                    {
+                        nVal = (int)(p[0] + amount);
 
-        if (nVal < 0) nVal = 0;
-        if (nVal > 255) nVal = 255;
+                        if (nVal < 0) nVal = 0;
+                        if (nVal > 255) nVal = 255;
 
-        p[0] = (byte)nVal;
+                        p[0] = (byte)nVal;
 
-        ++p;
-      }
-      p += nOffset;
-    }
-  }
+                        ++p;
+                    }
+                    p += nOffset;
+                }
+            }
 
-  bitmap.UnlockBits(bmData);
+            bitmap.UnlockBits(bmData);
 
-  return bitmap;
+            return bitmap;
         }
     }
     class ContrastEnchancement : ImageFilter
