@@ -23,7 +23,7 @@
             <TextBox Name="FactorTextBox"  HorizontalAlignment="Left" TextWrapping="Wrap" Text="0" VerticalAlignment="Center" Width="20" TextAlignment="Center"/>
             <Label Content="Bias:" HorizontalAlignment="Left"  VerticalAlignment="Center"/>
             <TextBox Name="BiasTextBox"  HorizontalAlignment="Left" TextWrapping="Wrap" Text="0" VerticalAlignment="Center" Width="20" TextAlignment="Center"/>
-            <Button Content="Create Filter" HorizontalAlignment="Left" VerticalAlignment="Center" Click="CreateFilter_Click" />
+            <Button Content="Create Filter" HorizontalAlignment="Right" VerticalAlignment="Center" Click="CreateFilter_Click" Margin="10" />
 
         </StackPanel>
         

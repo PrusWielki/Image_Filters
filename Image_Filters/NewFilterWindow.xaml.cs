@@ -55,8 +55,11 @@ namespace Image_Filters
                 Grid.SetRow(mainStackPanel, 1);
                 MainGrid.Children.Add(mainStackPanel);
 
+                
                 StackPanel[] stackPanel = new StackPanel[filterMatrix.GetLength(0)];
                 TextBox[] textBox = new TextBox[filterMatrix.GetLength(0) * filterMatrix.GetLength(1)];
+
+
                 for (int i = 0; i < filterMatrix.GetLength(0); i++)
                 {
                     stackPanel[i] = new StackPanel();

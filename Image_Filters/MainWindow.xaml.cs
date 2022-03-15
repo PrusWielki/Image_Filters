@@ -14,6 +14,8 @@ namespace Image_Filters
     {
         private System.Drawing.Image? imageDrawing;
         private List<ImageFilter> removedFilters;
+        private List<ImageFilter> filters;
+        private NewFilterWindow newFilterWindow;
         public MainWindow()
         {
             InitializeComponent();
@@ -21,7 +23,7 @@ namespace Image_Filters
             removedFilters = new List<ImageFilter>();
 
             //initialize a list of built-in filters 
-            var filters = new List<ImageFilter>();
+            filters = new List<ImageFilter>();
             filters.Add(new Invert("Invert"));
             filters.Add(new BrightnessCorrection("Brightness Correction"));
             filters.Add(new ContrastEnchancement("Contrast Enchancement"));
@@ -141,7 +143,7 @@ namespace Image_Filters
         //opens new window with possibility to create a custom convolution filter
         private void NewFilter_Click(object sender, RoutedEventArgs e)
         {
-            NewFilterWindow newFilterWindow = new NewFilterWindow();
+            newFilterWindow = new NewFilterWindow();
             newFilterWindow.ShowDialog();
             
         }
@@ -173,6 +175,9 @@ namespace Image_Filters
             }
             ApplyFilters();//reapply the filters
             removedFilters.Clear();
+        }
+        public void AddNewFilter() {
+            //filters.Add(new ConvolutionFilterBase("CreateFilter", newFilterWindow.bias,))
         }
     }
 }
