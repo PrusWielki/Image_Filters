@@ -19,10 +19,50 @@ namespace Image_Filters
     /// </summary>
     public partial class NewFilterWindow : Window
     {
-        public string[][] String2DArray { get; set; }
+        public double factor;
+        public double bias;
+        public double[,]? filterMatrix;
+
         public NewFilterWindow()
         {
+           
             InitializeComponent();
+        }
+        private void CreateMatrix_Click(object sender, RoutedEventArgs e)
+        {
+            bias=Int32.Parse(BiasTextBox.Text);
+            factor = Int32.Parse(FactorTextBox.Text);
+            filterMatrix = new double[Int32.Parse(ColumnTextBox.Text), Int32.Parse(RowTextBox.Text)];
+            ShowMatrix();
+            
+        }
+        private void ShowMatrix()
+        {
+            for(int i=0;i<filterMatrix.GetLength(0); i++)
+            CreateATextBox();
+
+
+        }
+        private void CreateATextBox()
+
+        {
+
+            TextBox txtb = new TextBox();
+
+            txtb.Height = 50;
+
+            txtb.Width = 200;
+
+            txtb.Text = "Text Box content";
+
+            txtb.Background = new SolidColorBrush(Colors.Orange);
+
+            txtb.Foreground = new SolidColorBrush(Colors.Black);
+
+           
+            TopStackPanel.Children.Add(txtb);
+            //LayoutRoot.Children.Add(txtb);
+
         }
     }
 }

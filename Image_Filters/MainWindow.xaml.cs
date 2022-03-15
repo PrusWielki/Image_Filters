@@ -138,9 +138,12 @@ namespace Image_Filters
             ConvertToDrawing(imgorig);
         }
 
+        //opens new window with possibility to create a custom convolution filter
         private void NewFilter_Click(object sender, RoutedEventArgs e)
         {
-
+            NewFilterWindow newFilterWindow = new NewFilterWindow();
+            newFilterWindow.ShowDialog();
+            
         }
         //opens save file dialog and saves the modified picture to jpeg format with a default name editedimage
         private void SaveImage_Click(object sender, RoutedEventArgs e)
@@ -164,11 +167,11 @@ namespace Image_Filters
         //after the redo button is pressed a set of previously removed filters is reapplied
         private void Redo_Click(object sender, RoutedEventArgs e)
         {
-            foreach(var filter in removedFilters)
+            foreach(var filter in removedFilters)//add all the removed filters to selectedfilters
             {
                 selectedListView.Items.Add(filter);
             }
-            ApplyFilters();
+            ApplyFilters();//reapply the filters
             removedFilters.Clear();
         }
     }
