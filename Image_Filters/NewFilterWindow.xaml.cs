@@ -42,7 +42,7 @@ namespace Image_Filters
             
         }
 
-        //TODO
+        //Copy data from textboxes to matrix variable
         public void SaveDataToMatrix()
         {
 
@@ -97,7 +97,7 @@ namespace Image_Filters
             }
 
         }
-        //this is not a good solution, but it works
+        //this is not a good solution, but it works (sometimes)
         private void NewFilterWindow_TextChanged(object sender, TextChangedEventArgs e)
         {
             SaveDataToMatrix();
