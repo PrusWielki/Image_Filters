@@ -6,23 +6,25 @@
         xmlns:local="clr-namespace:Image_Filters"
         mc:Ignorable="d"
         Title="NewFilterWindow" Height="450" Width="800">
-    <Grid>
+    <Grid Name="MainGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="10*"/>
+            <RowDefinition Name="SecondRow" Height="10*"/>
         </Grid.RowDefinitions>
         
         
-        <StackPanel Name="TopStackPanel" Orientation="Horizontal">
-            <Button Grid.Row="0" Content="Create Matrix" HorizontalAlignment="Left" VerticalAlignment="Center" Click="CreateMatrix_Click" />
+        <StackPanel Grid.Row="0" Name="TopStackPanel" Orientation="Horizontal">
+            <Button Content="Create Matrix" HorizontalAlignment="Left" VerticalAlignment="Center" Click="CreateMatrix_Click" />
             <Label Content="No. of rows:" HorizontalAlignment="Left"  VerticalAlignment="Center"/>
-            <TextBox Name="RowTextBox" Grid.Row="0" HorizontalAlignment="Left" TextWrapping="Wrap" Text="0" VerticalAlignment="Center" Width="20" TextAlignment="Center"/>
+            <TextBox Name="RowTextBox" HorizontalAlignment="Left" TextWrapping="Wrap" Text="0" VerticalAlignment="Center" Width="20" TextAlignment="Center"/>
             <Label Content="No. of columns:" HorizontalAlignment="Left"  VerticalAlignment="Center"/>
-            <TextBox Name="ColumnTextBox" Grid.Row="0" HorizontalAlignment="Left" TextWrapping="Wrap" Text="0" VerticalAlignment="Center" Width="20" TextAlignment="Center"/>
+            <TextBox Name="ColumnTextBox" HorizontalAlignment="Left" TextWrapping="Wrap" Text="0" VerticalAlignment="Center" Width="20" TextAlignment="Center"/>
             <Label Content="Factor:" HorizontalAlignment="Left"  VerticalAlignment="Center"/>
-            <TextBox Name="FactorTextBox" Grid.Row="0" HorizontalAlignment="Left" TextWrapping="Wrap" Text="0" VerticalAlignment="Center" Width="20" TextAlignment="Center"/>
+            <TextBox Name="FactorTextBox"  HorizontalAlignment="Left" TextWrapping="Wrap" Text="0" VerticalAlignment="Center" Width="20" TextAlignment="Center"/>
             <Label Content="Bias:" HorizontalAlignment="Left"  VerticalAlignment="Center"/>
-            <TextBox Name="BiasTextBox" Grid.Row="0" HorizontalAlignment="Left" TextWrapping="Wrap" Text="0" VerticalAlignment="Center" Width="20" TextAlignment="Center"/>
+            <TextBox Name="BiasTextBox"  HorizontalAlignment="Left" TextWrapping="Wrap" Text="0" VerticalAlignment="Center" Width="20" TextAlignment="Center"/>
+            <Button Content="Create Filter" HorizontalAlignment="Left" VerticalAlignment="Center" Click="CreateFilter_Click" />
+
         </StackPanel>
         
 
