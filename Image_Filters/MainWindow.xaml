@@ -24,10 +24,12 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <Button Grid.Row="0" Content="Open an image" HorizontalAlignment="Center" VerticalAlignment="Center" Click="Button_Click" />
                 <Button Grid.Row="1" Content="Create a new filter" HorizontalAlignment="Center" VerticalAlignment="Center" Click="NewFilter_Click" />
                 <Button Grid.Row="2" Content="Save image" HorizontalAlignment="Center" VerticalAlignment="Center" Click="SaveImage_Click" />
+                <Button Grid.Row="3" Content="Redo erased filters" HorizontalAlignment="Center" VerticalAlignment="Center" Click="Redo_Click" />
             </Grid>
             <Grid Grid.Row="1">
                 <Grid.RowDefinitions>

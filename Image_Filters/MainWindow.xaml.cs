@@ -13,9 +13,12 @@ namespace Image_Filters
     public partial class MainWindow : Window
     {
         private System.Drawing.Image? imageDrawing;
+        private List<ImageFilter> removedFilters;
         public MainWindow()
         {
             InitializeComponent();
+
+            removedFilters = new List<ImageFilter>();
 
             //initialize a list of built-in filters 
             var filters = new List<ImageFilter>();
@@ -28,7 +31,7 @@ namespace Image_Filters
             filters.Add(new Sharpen3x3Filter("3x3 Sharpen"));
             filters.Add(new EdgeDetectionFilter("Edge detection"));
             filters.Add(new EmbossFilter("Emboss filter"));
-            //add initialize flters to filter list
+            //add initialized flters to filter list
             filterListView.ItemsSource = filters;
 
         }
@@ -90,8 +93,10 @@ namespace Image_Filters
                 //add filter to selected filters and apply all selected filters to the original image resulting in a modified image
                 if (null != imgorig.Source)
                 {
+                    //clear the removedFilters list (task requirement)
+                    removedFilters.Clear();
                     selectedListView.Items.Add(item.Content as ImageFilter);
-                    ApplyFiliters();
+                    ApplyFilters();
                 }
             }
             else
@@ -100,8 +105,11 @@ namespace Image_Filters
         //Event handling removal of selected filters
         private void SelectedListViewItem_PreviewMouseLeftButtonDown(object sender, SelectionChangedEventArgs e)
         {
-            if (e.AddedItems.Count > 0)//remove selected filter from the list
+            if (e.AddedItems.Count > 0)//remove selected filter from the list and add it to removedFilters (for the redo button)
+            {
+                removedFilters.Add((ImageFilter)e.AddedItems[0]);
                 selectedListView.Items.RemoveAt(selectedListView.Items.IndexOf(e.AddedItems[0]));
+            }
             if (0 == selectedListView.Items.Count)//if the count of filters is equal to 0, then reset the image to the original
             {
                 imgmod.Source = imgorig.Source;
@@ -109,10 +117,10 @@ namespace Image_Filters
             }
             else//if there are some filters selected, then reaaply them one by one to the original image, resulting in modified image
             {
-                ApplyFiliters();
+                ApplyFilters();
             }
         }
-        private void ApplyFiliters()
+        private void ApplyFilters()
         {
             foreach (var filter in selectedListView.Items)
             {
@@ -134,6 +142,7 @@ namespace Image_Filters
         {
 
         }
+        //opens save file dialog and saves the modified picture to jpeg format with a default name editedimage
         private void SaveImage_Click(object sender, RoutedEventArgs e)
         {
             Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
@@ -141,7 +150,7 @@ namespace Image_Filters
             dlg.Filter = "JPeg Image|*.jpg|Bitmap Image|*.bmp|Gif Image|*.gif";
             if (dlg.ShowDialog() == true)
             {
-                var encoder = new JpegBitmapEncoder(); // Or PngBitmapEncoder, or whichever encoder you want
+                var encoder = new JpegBitmapEncoder();
                 encoder.Frames.Add(BitmapFrame.Create((BitmapSource)imgmod.Source));
                 using (var stream = dlg.OpenFile())
                 {
@@ -151,6 +160,16 @@ namespace Image_Filters
 
             
 
+        }
+        //after the redo button is pressed a set of previously removed filters is reapplied
+        private void Redo_Click(object sender, RoutedEventArgs e)
+        {
+            foreach(var filter in removedFilters)
+            {
+                selectedListView.Items.Add(filter);
+            }
+            ApplyFilters();
+            removedFilters.Clear();
         }
     }
 }
