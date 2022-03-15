@@ -22,7 +22,9 @@ namespace Image_Filters
         public double factor;
         public double bias;
         public double[,]? filterMatrix;
+        public string filterName;
 
+        private TextBox[] textBox;
         public NewFilterWindow()
         {
            
@@ -31,18 +33,29 @@ namespace Image_Filters
         private void CreateMatrix_Click(object sender, RoutedEventArgs e)
         {
             //get data from textboxes
-            bias=Int32.Parse(BiasTextBox.Text);
-            factor = Int32.Parse(FactorTextBox.Text);
+            bias=Double.Parse(BiasTextBox.Text);
+            factor = Double.Parse(FactorTextBox.Text);
             filterMatrix = new double[Int32.Parse(ColumnTextBox.Text), Int32.Parse(RowTextBox.Text)];
-
+            filterName = FilterNameTextBox.Text;
             //display matrix with default values = 0
             ShowMatrix();
             
         }
 
-        private void CreateFilter_Click(object sender, RoutedEventArgs e)
+        //TODO
+        public void SaveDataToMatrix()
         {
-            
+
+            for(int i=0;i< filterMatrix.GetLength(0); i++)
+            {
+
+                for(int j=0;j< filterMatrix.GetLength(1); j++)
+                {
+                    filterMatrix[i,j]=Int32.Parse(textBox[i* filterMatrix.GetLength(1)+j].Text);
+
+                }
+            }
+
 
         }
         private void ShowMatrix()
@@ -57,43 +70,37 @@ namespace Image_Filters
 
                 
                 StackPanel[] stackPanel = new StackPanel[filterMatrix.GetLength(0)];
-                TextBox[] textBox = new TextBox[filterMatrix.GetLength(0) * filterMatrix.GetLength(1)];
+                textBox = new TextBox[filterMatrix.GetLength(0) * filterMatrix.GetLength(1)];
+                
 
 
                 for (int i = 0; i < filterMatrix.GetLength(0); i++)
                 {
                     stackPanel[i] = new StackPanel();
                     stackPanel[i].Orientation=Orientation.Horizontal;
-
-                    //RowDefinition rowDefinition = new RowDefinition();
-                    //GridLength gridLength = new GridLength(20);
-            
-                    //rowDefinition.Height = gridLength;
-                    //MainGrid.RowDefinitions.Add(rowDefinition);
-                    
-                    
+                               
                     for (int j=0; j < filterMatrix.GetLength(1); j++)
                     {
                         textBox[i * filterMatrix.GetLength(1) + j] = new TextBox();
                         textBox[i * filterMatrix.GetLength(1) + j].Height = 20;
                         textBox[i * filterMatrix.GetLength(1) + j].Width= 20;
                         textBox[i * filterMatrix.GetLength(1) + j].Text = "0";
-                        //MainGrid.Children.Add(textBox[i * filterMatrix.GetLength(1) + j]);
-                        
+                        textBox[i * filterMatrix.GetLength(1) + j].TextChanged += NewFilterWindow_TextChanged;
+
                         stackPanel[i].Children.Add(textBox[i * filterMatrix.GetLength(1) + j]);
-                        //TopStackPanel.Children.Add(textBox[i * filterMatrix.GetLength(1) + j]);
                     }
-                    //Grid.SetRow(stackPanel[i], i+1);
-                    //MainGrid.Children.Add(stackPanel[i]);
+
                     mainStackPanel.Children.Add(stackPanel[i]);
                     
-                   // Grid.SetRow(stackPanel[i], i);
 
                 }
             }
 
         }
-        
-        
+        //this is not a good solution, but it works
+        private void NewFilterWindow_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            SaveDataToMatrix();
+        }
     }
 }

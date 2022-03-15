@@ -152,7 +152,8 @@ namespace Image_Filters
         //add the new filter on window closure
         private void NewFilterWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            filters.Add(new ConvolutionFilterBase("CreateFilter", newFilterWindow.factor, newFilterWindow.bias, newFilterWindow.filterMatrix));            
+            newFilterWindow.SaveDataToMatrix();
+            filters.Add(new ConvolutionFilterBase(newFilterWindow.FilterNameTextBox.Text, newFilterWindow.factor, newFilterWindow.bias, newFilterWindow.filterMatrix));
         }
 
         //opens save file dialog and saves the modified picture to jpeg format with a default name editedimage
@@ -183,10 +184,6 @@ namespace Image_Filters
             }
             ApplyFilters();//reapply the filters
             removedFilters.Clear();
-        }
-        //add new filter from the newFilterWindow
-        public void AddNewFilter() {
-            //filters.Add(new ConvolutionFilterBase("CreateFilter", newFilterWindow.bias,))
         }
     }
 }

@@ -16,14 +16,15 @@
         <StackPanel Grid.Row="0" Name="TopStackPanel" Orientation="Horizontal">
             <Button Content="Create Matrix" HorizontalAlignment="Left" VerticalAlignment="Center" Click="CreateMatrix_Click" />
             <Label Content="No. of rows:" HorizontalAlignment="Left"  VerticalAlignment="Center"/>
-            <TextBox Name="RowTextBox" HorizontalAlignment="Left" TextWrapping="Wrap" Text="0" VerticalAlignment="Center" Width="20" TextAlignment="Center"/>
+            <TextBox Name="RowTextBox" HorizontalAlignment="Left" TextWrapping="Wrap" Text="0" VerticalAlignment="Center" Width="30" TextAlignment="Center"/>
             <Label Content="No. of columns:" HorizontalAlignment="Left"  VerticalAlignment="Center"/>
-            <TextBox Name="ColumnTextBox" HorizontalAlignment="Left" TextWrapping="Wrap" Text="0" VerticalAlignment="Center" Width="20" TextAlignment="Center"/>
+            <TextBox Name="ColumnTextBox" HorizontalAlignment="Left" TextWrapping="Wrap" Text="0" VerticalAlignment="Center" Width="30" TextAlignment="Center"/>
             <Label Content="Factor:" HorizontalAlignment="Left"  VerticalAlignment="Center"/>
-            <TextBox Name="FactorTextBox"  HorizontalAlignment="Left" TextWrapping="Wrap" Text="0" VerticalAlignment="Center" Width="20" TextAlignment="Center"/>
+            <TextBox Name="FactorTextBox"  HorizontalAlignment="Left" TextWrapping="Wrap" Text="1" VerticalAlignment="Center" Width="30" TextAlignment="Center"/>
             <Label Content="Bias:" HorizontalAlignment="Left"  VerticalAlignment="Center"/>
-            <TextBox Name="BiasTextBox"  HorizontalAlignment="Left" TextWrapping="Wrap" Text="0" VerticalAlignment="Center" Width="20" TextAlignment="Center"/>
-            <Button Content="Create Filter" HorizontalAlignment="Right" VerticalAlignment="Center" Click="CreateFilter_Click" Margin="10" />
+            <TextBox Name="BiasTextBox"  HorizontalAlignment="Left" TextWrapping="Wrap" Text="0" VerticalAlignment="Center" Width="30" TextAlignment="Center"/>
+            <TextBox Name="FilterNameTextBox"  HorizontalAlignment="Left" TextWrapping="Wrap" Text="FilterName" VerticalAlignment="Center" Width="100" TextAlignment="Center" Margin="10"/>
+            <Label Name="InfoLabel"  HorizontalAlignment="Left" Content="*Filter is added on window closure" VerticalAlignment="Center" Width="200"/>
 
         </StackPanel>
         
