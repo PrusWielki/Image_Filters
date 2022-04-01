@@ -16,11 +16,12 @@
         <Grid Grid.Column="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
-                <RowDefinition Height="10*"/>
+                <RowDefinition Height="7*"/>
             </Grid.RowDefinitions>
 
             <Grid Grid.Row="0">
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
@@ -30,6 +31,7 @@
                 <Button Grid.Row="1" Content="Create a new filter" HorizontalAlignment="Center" VerticalAlignment="Center" Click="NewFilter_Click" />
                 <Button Grid.Row="2" Content="Save image" HorizontalAlignment="Center" VerticalAlignment="Center" Click="SaveImage_Click" />
                 <Button Grid.Row="3" Content="Redo erased filters" HorizontalAlignment="Center" VerticalAlignment="Center" Click="Redo_Click" />
+                <Button Grid.Row="4" Content="Convert to grayscale" HorizontalAlignment="Center" VerticalAlignment="Center" Click="Grayscale_Click" />
             </Grid>
             <Grid Grid.Row="1">
                 <Grid.RowDefinitions>
@@ -48,8 +50,8 @@
             </Grid>
 
         </Grid>
-        <Image Grid.Column="0" Name="imgorig" Stretch="Fill" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-        <Image Grid.Column="1" Name="imgmod" Stretch="Fill" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+        <Image Grid.Column="0" Name="imgorig" Stretch="None" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+        <Image Grid.Column="1" Name="imgmod" Stretch="None" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
     </Grid>
 
 </Window>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Drawing;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -184,6 +185,23 @@ namespace Image_Filters
             }
             ApplyFilters();//reapply the filters
             removedFilters.Clear();
+        }
+        private void Grayscale_Click(object sender, RoutedEventArgs e)
+        {
+            Bitmap c = (Bitmap)imageDrawing.Clone();
+            int x, y;
+
+            // Loop through the images pixels to reset color.
+            for (x = 0; x < c.Width; x++)
+            {
+                for (y = 0; y < c.Height; y++)
+                {
+                    Color pixelColor = c.GetPixel(x, y);
+                    Color newColor = Color.FromArgb(pixelColor.R, 0, 0);
+                    c.SetPixel(x, y, newColor); // Now greyscale
+                }
+            }
+            imageDrawing = c;
         }
     }
 }
