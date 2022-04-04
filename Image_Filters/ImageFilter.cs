@@ -421,6 +421,12 @@ namespace Image_Filters
             double green = 0.0;
             double red = 0.0;
 
+            double errorBlue= 0.0;
+            double errorGreen= 0.0;
+            double errorRed= 0.0;
+
+
+            double grayScale = 0.0;
             //get convolution filter matrix height and width(built in filters are 3x3)
             int filterWidth = filterMatrix.GetLength(1);
             int filterHeight = filterMatrix.GetLength(0);
@@ -445,7 +451,18 @@ namespace Image_Filters
                     byteOffset = offsetY * sourceData.Stride + offsetX * 4;
 
                     //approximate                    red                                      green                                 blue
-                    double grayScale = (double)((pixelBuffer[byteOffset + 2] * 0.3) + (pixelBuffer[byteOffset + 1] * 0.59) + (pixelBuffer[byteOffset] * 0.11));
+                    grayScale = (double)((pixelBuffer[byteOffset+2] * 0.3) + (pixelBuffer[byteOffset + 1] * 0.59) + (pixelBuffer[byteOffset] * 0.11));
+
+                    //save resulting pixel
+                    resultBuffer[byteOffset] = (byte)(grayScale);
+                    resultBuffer[byteOffset + 1] = (byte)(grayScale);
+                    resultBuffer[byteOffset + 2] = (byte)(grayScale);
+                    resultBuffer[byteOffset + 3] = 255;
+
+                    //Calculate the error
+                    errorBlue = pixelBuffer[byteOffset] - grayScale;
+                    errorGreen = pixelBuffer[byteOffset+1] - grayScale;
+                    errorRed = pixelBuffer[byteOffset+2] - grayScale;
 
                     for (int filterY = -filterOffset; filterY <= filterOffset; filterY++)
                     {
@@ -459,39 +476,18 @@ namespace Image_Filters
 
 
 
-                            //calculate new values for the pixel at byteoffset, multiply chosen neighbhour pixel by corresponding matrix value
+                    //calculate new values for the pixel at byteoffset, multiply chosen neighbhour pixel by corresponding matrix value
 
-                            blue += grayScale * filterMatrix[filterY + filterOffset, filterX + filterOffset];
+                            pixelBuffer[calcOffset] += (byte)(errorBlue * filterMatrix[filterY + filterOffset, filterX + filterOffset]);
 
-                            green += grayScale * filterMatrix[filterY + filterOffset, filterX + filterOffset];
+                            pixelBuffer[calcOffset+1] += (byte)(errorGreen * filterMatrix[filterY + filterOffset, filterX + filterOffset]);
 
-                            red += grayScale * filterMatrix[filterY + filterOffset, filterX + filterOffset];
+                            pixelBuffer[calcOffset+2] += (byte)(errorRed * filterMatrix[filterY + filterOffset, filterX + filterOffset]);
                         }
                     }
 
                     
-
-                    //normilize newly caluclated values to the 0-255 range
-                    if (blue > 255)
-                    { blue = 255; }
-                    else if (blue < 0)
-                    { blue = 0; }
-
-                    if (green > 255)
-                    { green = 255; }
-                    else if (green < 0)
-                    { green = 0; }
-
-                    if (red > 255)
-                    { red = 255; }
-                    else if (red < 0)
-                    { red = 0; }
-
-                    //save resulting pixel
-                    resultBuffer[byteOffset] = (byte)(blue);
-                    resultBuffer[byteOffset + 1] = (byte)(green);
-                    resultBuffer[byteOffset + 2] = (byte)(red);
-                    resultBuffer[byteOffset + 3] = 255;
+                    
                 }
             }
 
