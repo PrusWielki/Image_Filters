@@ -34,6 +34,7 @@ namespace Image_Filters
             filters.Add(new Sharpen3x3Filter("3x3 Sharpen"));
             filters.Add(new EdgeDetectionFilter("Edge detection"));
             filters.Add(new EmbossFilter("Emboss filter"));
+            filters.Add(new FloydAndSteinbergFilter("FloydSteinbergErrorDiffusion"));
             //add initialized flters to filter list
             filterListView.ItemsSource = filters;
 
@@ -189,19 +190,20 @@ namespace Image_Filters
         private void Grayscale_Click(object sender, RoutedEventArgs e)
         {
             Bitmap c = (Bitmap)imageDrawing.Clone();
-            int x, y;
+            Bitmap d = new Bitmap(c.Width, c.Height);
 
-            // Loop through the images pixels to reset color.
-            for (x = 0; x < c.Width; x++)
+            for (int i = 0; i < c.Width; i++)
             {
-                for (y = 0; y < c.Height; y++)
+                for (int x = 0; x < c.Height; x++)
                 {
-                    Color pixelColor = c.GetPixel(x, y);
-                    Color newColor = Color.FromArgb(pixelColor.R, 0, 0);
-                    c.SetPixel(x, y, newColor); // Now greyscale
+                    Color oc = c.GetPixel(i, x);
+                    int grayScale = (int)((oc.R * 0.3) + (oc.G * 0.59) + (oc.B * 0.11));
+                    Color nc = Color.FromArgb(oc.A, grayScale, grayScale, grayScale);
+                    d.SetPixel(i, x, nc);
                 }
             }
-            imageDrawing = c;
+            imageDrawing = d;
+            imgmod.Source = ToWpfImage(imageDrawing);
         }
     }
 }

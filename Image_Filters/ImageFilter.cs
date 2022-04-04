@@ -383,4 +383,140 @@ namespace Image_Filters
         }
     }
 
+    class ErrorDiffusionBase : ImageFilter
+    {
+
+
+        protected double[,] filterMatrix;
+
+       
+
+
+
+
+        protected ErrorDiffusionBase(string _name, double[,] _matrix ):base(_name)
+        {
+
+            filterMatrix = _matrix;   
+        }
+
+
+        public override Image applyFilter(Image imgSource)
+        {
+            Bitmap sourceBitmap = (Bitmap)imgSource.Clone();
+            BitmapData sourceData = sourceBitmap.LockBits(new Rectangle(0, 0, sourceBitmap.Width, sourceBitmap.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+
+            //initialize buffer with a size of a picture's height times it's stride (the width of a single row of pixels)
+            byte[] pixelBuffer = new byte[sourceData.Stride * sourceData.Height];
+            byte[] resultBuffer = new byte[sourceData.Stride * sourceData.Height];
+
+
+            Marshal.Copy(sourceData.Scan0, pixelBuffer, 0, pixelBuffer.Length);
+
+
+            sourceBitmap.UnlockBits(sourceData);
+
+
+            double blue = 0.0;
+            double green = 0.0;
+            double red = 0.0;
+
+            //get convolution filter matrix height and width(built in filters are 3x3)
+            int filterWidth = filterMatrix.GetLength(1);
+            int filterHeight = filterMatrix.GetLength(0);
+
+            //offset needed for when we work on pictures around the edges
+            int filterOffset = (filterWidth - 1) / 2;
+            int calcOffset = 0;
+
+
+            int byteOffset = 0;
+
+            //start off not from the very beggining of an image but with an offset (in the case of 3x3 filters, instead of starting from point (0,0) - start from (1,1)), the borders of an image are ignored
+            for (int offsetY = filterOffset; offsetY < sourceBitmap.Height - filterOffset; offsetY++)
+            {
+                for (int offsetX = filterOffset; offsetX < sourceBitmap.Width - filterOffset; offsetX++)
+                {
+                    blue = 0;
+                    green = 0;
+                    red = 0;
+
+                    //get to the correct set of aRGB values in the correct row, kind of an index
+                    byteOffset = offsetY * sourceData.Stride + offsetX * 4;
+
+                    //approximate                    red                                      green                                 blue
+                    double grayScale = (double)((pixelBuffer[byteOffset + 2] * 0.3) + (pixelBuffer[byteOffset + 1] * 0.59) + (pixelBuffer[byteOffset] * 0.11));
+
+                    for (int filterY = -filterOffset; filterY <= filterOffset; filterY++)
+                    {
+                        for (int filterX = -filterOffset; filterX <= filterOffset; filterX++)
+                        {
+
+                            //get index of one the neighbourhood pixel
+                            calcOffset = byteOffset + (filterX * 4) + (filterY * sourceData.Stride);
+
+
+
+
+
+                            //calculate new values for the pixel at byteoffset, multiply chosen neighbhour pixel by corresponding matrix value
+
+                            blue += grayScale * filterMatrix[filterY + filterOffset, filterX + filterOffset];
+
+                            green += grayScale * filterMatrix[filterY + filterOffset, filterX + filterOffset];
+
+                            red += grayScale * filterMatrix[filterY + filterOffset, filterX + filterOffset];
+                        }
+                    }
+
+                    
+
+                    //normilize newly caluclated values to the 0-255 range
+                    if (blue > 255)
+                    { blue = 255; }
+                    else if (blue < 0)
+                    { blue = 0; }
+
+                    if (green > 255)
+                    { green = 255; }
+                    else if (green < 0)
+                    { green = 0; }
+
+                    if (red > 255)
+                    { red = 255; }
+                    else if (red < 0)
+                    { red = 0; }
+
+                    //save resulting pixel
+                    resultBuffer[byteOffset] = (byte)(blue);
+                    resultBuffer[byteOffset + 1] = (byte)(green);
+                    resultBuffer[byteOffset + 2] = (byte)(red);
+                    resultBuffer[byteOffset + 3] = 255;
+                }
+            }
+
+            //save results to new bitmap
+            Bitmap resultBitmap = new Bitmap(sourceBitmap.Width, sourceBitmap.Height);
+
+
+            BitmapData resultData = resultBitmap.LockBits(new Rectangle(0, 0,
+                                    resultBitmap.Width, resultBitmap.Height),
+                                    ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
+
+
+            Marshal.Copy(resultBuffer, 0, resultData.Scan0, resultBuffer.Length);
+            resultBitmap.UnlockBits(resultData);
+
+
+            return resultBitmap;
+        }
+    }
+
+    class FloydAndSteinbergFilter : ErrorDiffusionBase
+    {
+        public FloydAndSteinbergFilter(string _name) : base(_name, new double[,] { { 0, 0, 0, }, { 0, 0, 7.0/16.0, }, { 3.0/16.0, 5.0/16.0, 1.0/16.0, }, })
+        {
+        }
+    }
+
 }
