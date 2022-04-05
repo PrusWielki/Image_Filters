@@ -39,13 +39,13 @@ namespace Image_Filters
             filters.Add(new Sharpen3x3Filter("3x3 Sharpen"));
             filters.Add(new EdgeDetectionFilter("Edge detection"));
             filters.Add(new EmbossFilter("Emboss filter"));
-
+            filters.Add(new YCbCrFilter("YCbCrDithering", 0.3, 0.59, 0.11));
             filters.Add(new FloydAndSteinbergFilter("ErrorDiffusion",0.3,0.59,0.11));
             //filters.Add(new BurkesFilter("BurkesErrorDiffusion"));
             //filters.Add(new StuckyFilter("StuckyErrorDiffusion"));
             //filters.Add(new SierraFilter("SierraErrorDiffusion"));
             //filters.Add(new AtkinsonFilter("AtkinsonErrorDiffusion"));
-            filters.Add(new YCbCrFilter("YCbCrDithering", 0.3, 0.59, 0.11));
+            
             filters.Add(new UniformQuantization("UniformQuantization", 16, 16, 16));
 
 

@@ -30,6 +30,7 @@ namespace Image_Filters
         public double bRegions;
         public FilterOptionsWindow()
         {
+            chosenErrorDiffusionFilter = "FloydSteinberg";
             rErrorDiffusion = 0.3;
             gErrorDiffusion = 0.59;
             bErrorDiffusion = 0.11;
