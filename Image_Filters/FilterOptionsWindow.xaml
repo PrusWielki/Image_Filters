@@ -1,0 +1,44 @@
+﻿<Window x:Class="Image_Filters.FilterOptionsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Image_Filters"
+        mc:Ignorable="d"
+        Title="FilterOptionsWindow" Height="450" Width="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Column="0" Name="TopStackPanel" Orientation="Vertical">
+        <ComboBox Width="200" Height="30" VerticalAlignment="Top" SelectionChanged="ComboBox_SelectionChanged" >
+            <ComboBoxItem Content="FloydSteinberg"></ComboBoxItem>
+            <ComboBoxItem Content="Burkes"></ComboBoxItem>
+            <ComboBoxItem Content="Stucky"></ComboBoxItem>
+            <ComboBoxItem Content="Sierra"></ComboBoxItem>
+            <ComboBoxItem Content="Atkinson"></ComboBoxItem>
+        </ComboBox>
+        
+            
+            <Label Content="R" HorizontalAlignment="Center"  VerticalAlignment="Center"/>
+            <TextBox Name="RTextBox" Text="0.3" HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Center" Width="30" TextAlignment="Center" TextChanged="FilterOptionsWindow_TextChanged"/>
+            <Label Content="G" HorizontalAlignment="Center"  VerticalAlignment="Center"/>
+            <TextBox Name="GTextBox" Text="0.59" HorizontalAlignment="Center" TextWrapping="Wrap"  VerticalAlignment="Center" Width="30" TextAlignment="Center" TextChanged="FilterOptionsWindow_TextChanged"/>
+            <Label Content="B" HorizontalAlignment="Center"  VerticalAlignment="Center"/>
+            <TextBox Name="BTextBox" Text="0.11"  HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Center" Width="30" TextAlignment="Center" TextChanged="FilterOptionsWindow_TextChanged"/>
+            
+
+        </StackPanel>
+        <StackPanel Grid.Column="1" Name="QuantStackPanel" Orientation="Vertical">
+            <Label Content="Amount of R regions" HorizontalAlignment="Center"  VerticalAlignment="Center"/>
+            <TextBox Name="RRegionsTextBox" Text="4" HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Center" Width="30" TextAlignment="Center" TextChanged="FilterOptionsWindow_TextChanged"/>
+            <Label Content="Amount of G regions" HorizontalAlignment="Center"  VerticalAlignment="Center"/>
+            <TextBox Name="GRegionsTextBox" Text="4" HorizontalAlignment="Center" TextWrapping="Wrap"  VerticalAlignment="Center" Width="30" TextAlignment="Center" TextChanged="FilterOptionsWindow_TextChanged"/>
+            <Label Content="Amount of B regions" HorizontalAlignment="Center"  VerticalAlignment="Center"/>
+            <TextBox Name="BRegionsTextBox" Text="4"  HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Center" Width="30" TextAlignment="Center" TextChanged="FilterOptionsWindow_TextChanged"/>
+
+        </StackPanel>
+    </Grid>
+</Window>

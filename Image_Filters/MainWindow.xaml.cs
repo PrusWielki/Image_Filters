@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -18,10 +20,13 @@ namespace Image_Filters
         private List<ImageFilter> removedFilters;
         private ObservableCollection<ImageFilter> filters;
         private NewFilterWindow newFilterWindow;
+        private bool isGrayScale;
+        private FilterOptionsWindow filterOptionsWindow;
         public MainWindow()
         {
             InitializeComponent();
             removedFilters = new List<ImageFilter>();
+            isGrayScale = false;
 
             //initialize a list of built-in filters 
             filters = new ObservableCollection<ImageFilter>();
@@ -34,7 +39,17 @@ namespace Image_Filters
             filters.Add(new Sharpen3x3Filter("3x3 Sharpen"));
             filters.Add(new EdgeDetectionFilter("Edge detection"));
             filters.Add(new EmbossFilter("Emboss filter"));
-            filters.Add(new FloydAndSteinbergFilter("FloydSteinbergErrorDiffusion"));
+
+            filters.Add(new FloydAndSteinbergFilter("ErrorDiffusion",0.3,0.59,0.11));
+            //filters.Add(new BurkesFilter("BurkesErrorDiffusion"));
+            //filters.Add(new StuckyFilter("StuckyErrorDiffusion"));
+            //filters.Add(new SierraFilter("SierraErrorDiffusion"));
+            //filters.Add(new AtkinsonFilter("AtkinsonErrorDiffusion"));
+            filters.Add(new YCbCrFilter("YCbCrDithering", 0.3, 0.59, 0.11));
+            filters.Add(new UniformQuantization("UniformQuantization", 16, 16, 16));
+
+
+
             //add initialized flters to filter list
             filterListView.ItemsSource = filters;
 
@@ -126,10 +141,12 @@ namespace Image_Filters
         }
         private void ApplyFilters()
         {
+            if (isGrayScale)
+                Grayscale_Click(null,null);
             foreach (var filter in selectedListView.Items)
             {
                 if (null != imageDrawing)
-                    imageDrawing = ((ImageFilter)filter).applyFilter(imageDrawing);
+                    imageDrawing = ((ImageFilter)filter).applyFilter(imageDrawing,isGrayScale);
                 else
                     return;// throw new NullReferenceException();
 
@@ -191,7 +208,7 @@ namespace Image_Filters
         {
             Bitmap c = (Bitmap)imageDrawing.Clone();
             Bitmap d = new Bitmap(c.Width, c.Height);
-
+            isGrayScale = true;
             for (int i = 0; i < c.Width; i++)
             {
                 for (int x = 0; x < c.Height; x++)
@@ -205,5 +222,129 @@ namespace Image_Filters
             imageDrawing = d;
             imgmod.Source = ToWpfImage(imageDrawing);
         }
+        
+        private void FilterOptions_Click(object sender, RoutedEventArgs e)
+        {
+            int index = 0;
+
+            foreach (var filter in filters)
+            {
+                if (filter.getName() == "ErrorDiffusion")
+                    index = filters.IndexOf(filter);
+
+            }
+            filters.RemoveAt(index);
+            foreach (var filter in filters)
+            {
+                
+                if (filter.getName() == "UniformQuantization")
+                    index = filters.IndexOf(filter);
+            }
+            filters.RemoveAt(index);
+            filterOptionsWindow = new FilterOptionsWindow();
+
+            filterOptionsWindow.Closing += FilterOptionsWindow_Closing;
+            filterOptionsWindow.ShowDialog();
+        }
+
+        //add the new filter on window closure
+        private void FilterOptionsWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (filterOptionsWindow.chosenErrorDiffusionFilter == "Burkes")
+                filters.Add( new BurkesFilter("ErrorDiffusion",filterOptionsWindow.rErrorDiffusion, filterOptionsWindow.gErrorDiffusion, filterOptionsWindow.bErrorDiffusion));
+            else if (filterOptionsWindow.chosenErrorDiffusionFilter == "FloydSteinberg")
+                filters.Add(new FloydAndSteinbergFilter("ErrorDiffusion", filterOptionsWindow.rErrorDiffusion, filterOptionsWindow.gErrorDiffusion, filterOptionsWindow.bErrorDiffusion));
+            else if (filterOptionsWindow.chosenErrorDiffusionFilter == "Stucky")
+                filters.Add(new StuckyFilter("ErrorDiffusion", filterOptionsWindow.rErrorDiffusion, filterOptionsWindow.gErrorDiffusion, filterOptionsWindow.bErrorDiffusion));
+            else if (filterOptionsWindow.chosenErrorDiffusionFilter == "Sierra")
+                filters.Add(new SierraFilter("ErrorDiffusion", filterOptionsWindow.rErrorDiffusion, filterOptionsWindow.gErrorDiffusion, filterOptionsWindow.bErrorDiffusion));
+            else if (filterOptionsWindow.chosenErrorDiffusionFilter == "Atkinson")
+                filters.Add(new AtkinsonFilter("ErrorDiffusion", filterOptionsWindow.rErrorDiffusion, filterOptionsWindow.gErrorDiffusion, filterOptionsWindow.bErrorDiffusion));
+            filters.Add(new UniformQuantization("UniformQuantization", filterOptionsWindow.rRegions, filterOptionsWindow.gRegions, filterOptionsWindow.bRegions));
+
+        }
+
+
+
+
+
+
+
+
+
+        private void YCbCr_Click(object sender, RoutedEventArgs e)
+        {
+            Bitmap sourceBitmap = (Bitmap)imageDrawing.Clone();
+           
+            
+            BitmapData sourceData = sourceBitmap.LockBits(new Rectangle(0, 0, sourceBitmap.Width, sourceBitmap.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+
+            //initialize buffer with a size of a picture's height times it's stride (the width of a single row of pixels)
+            byte[] pixelBuffer = new byte[sourceData.Stride * sourceData.Height];
+            byte[] resultBuffer = new byte[sourceData.Stride * sourceData.Height];
+
+
+            Marshal.Copy(sourceData.Scan0, pixelBuffer, 0, pixelBuffer.Length);
+
+
+            sourceBitmap.UnlockBits(sourceData);
+
+
+            double blue = 0.0;
+            double green = 0.0;
+            double red = 0.0;
+
+      
+            int byteOffset = 0;
+
+            //start off not from the very beggining of an image but with an offset (in the case of 3x3 filters, instead of starting from point (0,0) - start from (1,1)), the borders of an image are ignored
+            for (int offsetY = 0; offsetY < sourceBitmap.Height ; offsetY++)
+            {
+                for (int offsetX = 0; offsetX < sourceBitmap.Width ; offsetX++)
+                {
+                    blue = 0;
+                    green = 0;
+                    red = 0;
+
+                    //get to the correct set of aRGB values in the correct row, kind of an index
+                    byteOffset = offsetY * sourceData.Stride + offsetX * 4;
+
+
+
+                    //convert to YCbCr
+                    //resultBuffer[byteOffset+2] = (byte)(pixelBuffer[byteOffset + 2]*0.299+ pixelBuffer[byteOffset + 1]*0.587+ pixelBuffer[byteOffset]*0.114);
+                    //resultBuffer[byteOffset + 1] = (byte)(128 -0.168736* pixelBuffer[byteOffset + 2]-0.331264* pixelBuffer[byteOffset + 1]+0.5* pixelBuffer[byteOffset]);
+                    //resultBuffer[byteOffset] = (byte)(128+0.5* pixelBuffer[byteOffset + 2]-0.418688* pixelBuffer[byteOffset + 1]-0.81312* pixelBuffer[byteOffset]);
+                    //resultBuffer[byteOffset + 3] = 255;
+
+
+                    resultBuffer[byteOffset + 2] =  (byte)(pixelBuffer[byteOffset + 2] * 0.299 + pixelBuffer[byteOffset + 1] * 0.587 + pixelBuffer[byteOffset] * 0.114);
+                    resultBuffer[byteOffset + 1] = (byte)(128 - 0.168736 * pixelBuffer[byteOffset + 2] - 0.331264 * pixelBuffer[byteOffset + 1] + 0.5 * pixelBuffer[byteOffset]);
+                    resultBuffer[byteOffset] = (byte)(128 + 0.5 * pixelBuffer[byteOffset + 2] - 0.418688 * pixelBuffer[byteOffset + 1] - 0.81312 * pixelBuffer[byteOffset]);
+                    resultBuffer[byteOffset + 3] = 255;
+
+                }
+            }
+
+            //save results to new bitmap
+            Bitmap resultBitmap = new Bitmap(sourceBitmap.Width, sourceBitmap.Height);
+
+
+            BitmapData resultData = resultBitmap.LockBits(new Rectangle(0, 0,
+                                    resultBitmap.Width, resultBitmap.Height),
+                                    ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
+
+           
+
+
+            Marshal.Copy(resultBuffer, 0, resultData.Scan0, resultBuffer.Length);
+            resultBitmap.UnlockBits(resultData);
+
+
+            
+            imageDrawing = resultBitmap;
+            imgmod.Source = ToWpfImage(imageDrawing);
+        }
+        
     }
 }

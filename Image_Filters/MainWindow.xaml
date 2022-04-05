@@ -16,11 +16,12 @@
         <Grid Grid.Column="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
-                <RowDefinition Height="7*"/>
+                <RowDefinition Height="6*"/>
             </Grid.RowDefinitions>
 
             <Grid Grid.Row="0">
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
@@ -32,6 +33,7 @@
                 <Button Grid.Row="2" Content="Save image" HorizontalAlignment="Center" VerticalAlignment="Center" Click="SaveImage_Click" />
                 <Button Grid.Row="3" Content="Redo erased filters" HorizontalAlignment="Center" VerticalAlignment="Center" Click="Redo_Click" />
                 <Button Grid.Row="4" Content="Convert to grayscale" HorizontalAlignment="Center" VerticalAlignment="Center" Click="Grayscale_Click" />
+                <Button Grid.Row="5" Content="Filter options" HorizontalAlignment="Center" VerticalAlignment="Center" Click="FilterOptions_Click" />
             </Grid>
             <Grid Grid.Row="1">
                 <Grid.RowDefinitions>
